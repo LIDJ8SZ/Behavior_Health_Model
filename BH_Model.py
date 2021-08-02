@@ -20,7 +20,8 @@ def check_auto_include(M1730_PHQ2_LACK_INTRST,M1730_PHQ2_DPRSN,M1720_WHEN_ANXIOU
         dest_list.append(1) if int(M1745_BEH_PROB) in (5,6) else dest_list.append(0)
     return sum(dest_list)
 
-  def get_M1740(M1740_BD_IMP_DECISN,M1740_BD_VERBAL,M1740_BD_PHYSICAL,M1740_BD_SOC_INAPPRO,M1740_BD_DELUSIONS):
+
+def get_M1740(M1740_BD_IMP_DECISN,M1740_BD_VERBAL,M1740_BD_PHYSICAL,M1740_BD_SOC_INAPPRO,M1740_BD_DELUSIONS):
     source_list = [M1740_BD_IMP_DECISN,M1740_BD_VERBAL,M1740_BD_PHYSICAL,M1740_BD_SOC_INAPPRO,M1740_BD_DELUSIONS]
     dest_list = []
     for i in source_list:
@@ -29,8 +30,9 @@ def check_auto_include(M1730_PHQ2_LACK_INTRST,M1730_PHQ2_DPRSN,M1720_WHEN_ANXIOU
         else:
             dest_list.append(i) if int(i) == 1 else dest_list.append(0)
     return sum(dest_list)
+
   
-  def get_icd10(M1021_PRIMARY_DIAG_ICD,M1023_OTH_DIAG1_ICD,M1023_OTH_DIAG2_ICD,M1023_OTH_DIAG3_ICD,M1023_OTH_DIAG4_ICD,M1023_OTH_DIAG5_ICD,bh_codes):
+def get_icd10(M1021_PRIMARY_DIAG_ICD,M1023_OTH_DIAG1_ICD,M1023_OTH_DIAG2_ICD,M1023_OTH_DIAG3_ICD,M1023_OTH_DIAG4_ICD,M1023_OTH_DIAG5_ICD,bh_codes):
     bcd_df = bh_codes.dropna(subset=['Code'])
     li = bcd_df['Code'].tolist()
     diag_list = [M1021_PRIMARY_DIAG_ICD,M1023_OTH_DIAG1_ICD,M1023_OTH_DIAG2_ICD,M1023_OTH_DIAG3_ICD,M1023_OTH_DIAG4_ICD,M1023_OTH_DIAG5_ICD]
@@ -42,7 +44,7 @@ def check_auto_include(M1730_PHQ2_LACK_INTRST,M1730_PHQ2_DPRSN,M1720_WHEN_ANXIOU
             dest_list.append(0)
     return sum(dest_list)
   
-  def main(path_to_input_file):
+def main(path_to_input_file):
     df = pd.read_csv(path_to_input_file,delimiter = ',')
     bh_codes = pd.read_csv('BH ICD10 Codes.csv',delimiter = ',')
     
@@ -108,7 +110,7 @@ def check_auto_include(M1730_PHQ2_LACK_INTRST,M1730_PHQ2_DPRSN,M1720_WHEN_ANXIOU
     if AutoDecision == 'NA':
         print("AutoDecision : "+AutoDecision)
         
-   if __name__ == "__main__":
+ if __name__ == "__main__":
     main('BH_Input_Final.csv')
     
     
