@@ -1,9 +1,9 @@
 import pandas as pd
 import json
-from pyspark.sql.types import (StructField, StringType, StructType, IntegerType)
 import os
 import pandasql as ps
 import warnings
+import argparse
 
 def check_auto_include(M1730_PHQ2_LACK_INTRST,M1730_PHQ2_DPRSN,M1720_WHEN_ANXIOUS,M1745_BEH_PROB_FREQ):
     list_1 = [M1730_PHQ2_LACK_INTRST,M1730_PHQ2_DPRSN,M1720_WHEN_ANXIOUS]
@@ -20,7 +20,6 @@ def check_auto_include(M1730_PHQ2_LACK_INTRST,M1730_PHQ2_DPRSN,M1720_WHEN_ANXIOU
         dest_list.append(1) if int(M1745_BEH_PROB) in (5,6) else dest_list.append(0)
     return sum(dest_list)
 
-
 def get_M1740(M1740_BD_IMP_DECISN,M1740_BD_VERBAL,M1740_BD_PHYSICAL,M1740_BD_SOC_INAPPRO,M1740_BD_DELUSIONS):
     source_list = [M1740_BD_IMP_DECISN,M1740_BD_VERBAL,M1740_BD_PHYSICAL,M1740_BD_SOC_INAPPRO,M1740_BD_DELUSIONS]
     dest_list = []
@@ -31,7 +30,6 @@ def get_M1740(M1740_BD_IMP_DECISN,M1740_BD_VERBAL,M1740_BD_PHYSICAL,M1740_BD_SOC
             dest_list.append(i) if int(i) == 1 else dest_list.append(0)
     return sum(dest_list)
 
-  
 def get_icd10(M1021_PRIMARY_DIAG_ICD,M1023_OTH_DIAG1_ICD,M1023_OTH_DIAG2_ICD,M1023_OTH_DIAG3_ICD,M1023_OTH_DIAG4_ICD,M1023_OTH_DIAG5_ICD,bh_codes):
     bcd_df = bh_codes.dropna(subset=['Code'])
     li = bcd_df['Code'].tolist()
@@ -43,10 +41,11 @@ def get_icd10(M1021_PRIMARY_DIAG_ICD,M1023_OTH_DIAG1_ICD,M1023_OTH_DIAG2_ICD,M10
         else:
             dest_list.append(0)
     return sum(dest_list)
-  
-def main(path_to_input_file):
+
+
+def main(path_to_input_file,path_to_bhcodes_file):
     df = pd.read_csv(path_to_input_file,delimiter = ',')
-    bh_codes = pd.read_csv('BH ICD10 Codes.csv',delimiter = ',')
+    bh_codes = pd.read_csv(path_to_bhcodes_file,delimiter = ',')
     
     my_dict = df.to_dict('records')
     score = 0
@@ -109,8 +108,11 @@ def main(path_to_input_file):
             print("Score : "+str(score))
     if AutoDecision == 'NA':
         print("AutoDecision : "+AutoDecision)
-        
- if __name__ == "__main__":
-    main('BH_Input_Final.csv')
+
+if __name__ == "__main__":
     
-    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i','--input', help = "Location of Input File", required=False, default='E:\BH_Trigger\BH_Input_Final.csv')
+    parser.add_argument('-b','--bhcodes', help = "Location of BH Codes File", required = False, default = 'E:\BH_Trigger\BH_ICD10_Codes.csv')
+    args = parser.parse_args()
+    main(args.input,args.bhcodes)
